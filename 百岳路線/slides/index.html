@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>百岳路線知識庫｜研究報告與簡報總覽</title>
+  <style>
+    :root {
+      --bg-paper: #F6F4EF;
+      --bg-card: #FDFCF9;
+      --pine-dark: #1E3A2F;
+      --pine-mid: #2F5746;
+      --pine-light: #E2EAE5;
+      --ink: #1F2933;
+      --ink-muted: #52606D;
+      --border: #D8D2C5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background-color: var(--bg-paper);
+      color: var(--ink);
+      font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.7;
+      background-image: repeating-radial-gradient(circle at 88% 12%, transparent 0, transparent 38px, rgba(30, 58, 47, 0.04) 39px, transparent 40px);
+    }
+    .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85em; }
+    .container { max-width: 980px; margin: 0 auto; padding: 2.25rem 1.25rem 4rem; }
+    .hero {
+      background: var(--pine-dark);
+      color: #F6F4EF;
+      border-radius: 14px;
+      padding: 2.35rem 2.2rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 10px 28px rgba(30, 58, 47, 0.14);
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      background: rgba(255, 255, 255, 0.14);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      margin-bottom: 0.85rem;
+    }
+    .hero h1 {
+      font-family: "Noto Serif TC", Georgia, serif;
+      font-size: clamp(1.65rem, 3vw, 2.2rem);
+      margin: 0 0 0.5rem;
+      line-height: 1.3;
+    }
+    .hero p { margin: 0; color: #DCE5DF; max-width: 65ch; }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .filter-btn {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--ink-muted);
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--pine-dark);
+      color: #F6F4EF;
+      border-color: var(--pine-dark);
+    }
+    .search-input {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.9rem;
+      color: var(--ink);
+      min-width: 220px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.2rem;
+    }
+    .report-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .report-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(30, 58, 47, 0.08);
+    }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+      margin-bottom: 0.6rem;
+    }
+    .pill {
+      background: var(--pine-light);
+      color: var(--pine-dark);
+      padding: 0.15rem 0.55rem;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 0.78rem;
+    }
+    .report-card h2 {
+      font-family: "Noto Serif TC", Georgia, serif;
+      color: var(--pine-dark);
+      font-size: 1.2rem;
+      margin: 0 0 0.5rem;
+      line-height: 1.4;
+    }
+    .report-card p {
+      font-size: 0.92rem;
+      color: var(--ink-muted);
+      margin: 0 0 1.2rem;
+    }
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 0.85rem;
+      font-size: 0.86rem;
+    }
+    .btn-open {
+      display: inline-block;
+      background: var(--pine-dark);
+      color: #F6F4EF;
+      text-decoration: none;
+      padding: 0.42rem 0.95rem;
+      border-radius: 7px;
+      font-weight: 500;
+    }
+    .btn-open:hover { background: var(--pine-mid); }
+    .link-sub { color: var(--pine-mid); text-decoration: none; }
+    .link-sub:hover { text-decoration: underline; }
+
+    .placeholder-card {
+      border-style: dashed;
+      background: rgba(253, 252, 249, 0.55);
+      color: var(--ink-muted);
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: 0.84rem;
+      margin-top: 2.5rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="hero">
+      <span class="hero-tag">Topographic Field Journal · Knowledge Hub</span>
+      <h1>百岳路線知識庫｜研究報告與簡報總覽</h1>
+      <p>彙整自 <span class="mono">wiki/</span> 與 <span class="mono">notes/</span> 編譯產出之專題報告，點擊各卡片即可進入對應分頁閱讀完整數據、公式與撤退決策分析。</p>
+    </div>
+
+    <div class="toolbar">
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">全部主題</button>
+        <button class="filter-btn" data-filter="nanheng">南橫／玉山</button>
+        <button class="filter-btn" data-filter="nantou">南投／雙龍林道</button>
+        <button class="filter-btn" data-filter="safety">撤退與安全</button>
+      </div>
+      <input type="text" class="search-input" id="searchBox" placeholder="搜尋報告標題或關鍵字…" />
+    </div>
+
+    <div class="grid" id="cardGrid">
+      <article class="report-card" data-tags="nanheng safety" data-title="關山嶺山的撤退路線與決策分析 單攻 溪頭 魔保來 向陽">
+        <div>
+          <div class="card-meta">
+            <span class="pill">南橫・D 級撤退</span>
+            <span class="mono">2026-11-16</span>
+          </div>
+          <h2>關山嶺山的撤退路線與決策分析</h2>
+          <p>涵蓋單攻原路折返與「關山嶺上溪頭魔保出向陽」四階段停損、小營地不可逆分界、日照安全餘裕與箭竹海延誤率量化。</p>
+        </div>
+        <div class="card-actions">
+          <a class="link-sub" href="guanshanling-retreat-routes/outline.md">逐頁大綱 (.md)</a>
+          <a class="btn-open" href="guanshanling-retreat-routes/index.html">開啟分頁 →</a>
+        </div>
+      </article>
+
+      <article class="report-card" data-tags="nantou safety" data-title="巒安堂登山計劃分析 巒安堂上西巒大山 雙龍林道 停機坪 水源">
+        <div>
+          <div class="card-meta">
+            <span class="pill">雙龍林道・D 級計畫</span>
+            <span class="mono">2026-11-16</span>
+          </div>
+          <h2>巒安堂登山計劃分析（巒安堂上西巒大山）</h2>
+          <p>雙龍林道原路進出 32.7 km 高爬升縱走：14 人大隊編組、乾季水源雙層備援與兩階段時間停損機制。</p>
+        </div>
+        <div class="card-actions">
+          <a class="link-sub" href="luanantang-hiking-plan/outline.md">逐頁大綱 (.md)</a>
+          <a class="btn-open" href="luanantang-hiking-plan/index.html">開啟分頁 →</a>
+        </div>
+      </article>
+
+      <article class="report-card placeholder-card" data-tags="all" data-title="">
+        <div>
+          <div class="card-meta">
+            <span class="mono">NEXT TOPIC</span>
+          </div>
+          <h2>下一個研究主題</h2>
+          <p>未來每當你提出新問題或研究主題，產出的 <span class="mono">notes/</span> 與分頁簡報皆會自動掛載於此總覽頁面。</p>
+        </div>
+      </article>
+    </div>
+
+    <footer>
+      根目錄索引：<span class="mono">../index.md</span> ｜ 維護規範：<span class="mono">../agent.md</span>
+    </footer>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const buttons = document.querySelectorAll(".filter-btn");
+      const cards = document.querySelectorAll(".report-card[data-title]");
+      const searchBox = document.getElementById("searchBox");
+      let activeTag = "all";
+
+      function applyFilter() {
+        const q = searchBox.value.trim().toLowerCase();
+        cards.forEach(function (card) {
+          const tags = card.getAttribute("data-tags") || "";
+          const title = (card.getAttribute("data-title") || "").toLowerCase();
+          if (tags === "all") {
+            card.style.display = q ? "none" : "flex";
+            return;
+          }
+          const matchTag = activeTag === "all" || tags.includes(activeTag);
+          const matchQuery = !q || title.includes(q);
+          card.style.display = (matchTag && matchQuery) ? "flex" : "none";
+        });
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          buttons.forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          activeTag = btn.getAttribute("data-filter");
+          applyFilter();
+        });
+      });
+
+      searchBox.addEventListener("input", applyFilter);
+    });
+  </script>
+</body>
+</html>

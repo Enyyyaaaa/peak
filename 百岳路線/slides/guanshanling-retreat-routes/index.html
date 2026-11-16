@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>關山嶺山的撤退路線與決策分析｜山林地形圖誌</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <style>
+    :root {
+      --bg-paper: #F6F4EF;
+      --bg-card: #FDFCF9;
+      --pine-dark: #1E3A2F;
+      --pine-mid: #2F5746;
+      --pine-light: #E2EAE5;
+      --rust-warn: #B45309;
+      --rust-bg: #FEF3C7;
+      --danger: #991B1B;
+      --danger-bg: #FEE2E2;
+      --ink: #1F2933;
+      --ink-muted: #52606D;
+      --border: #D8D2C5;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background-color: var(--bg-paper);
+      color: var(--ink);
+      font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.75;
+      background-image: repeating-radial-gradient(circle at 85% 15%, transparent 0, transparent 38px, rgba(30, 58, 47, 0.04) 39px, transparent 40px);
+    }
+    .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(246, 244, 239, 0.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+    .topbar-inner { max-width: 980px; margin: 0 auto; padding: 0.7rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .brand { font-family: "Noto Serif TC", Georgia, serif; font-weight: 700; color: var(--pine-dark); font-size: 0.98rem; }
+    .nav-links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem; }
+    .nav-links a { color: var(--ink-muted); text-decoration: none; }
+    .nav-links a:hover { color: var(--pine-dark); text-decoration: underline; }
+    .container { max-width: 980px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .hero { background: var(--pine-dark); color: #F6F4EF; border-radius: 14px; padding: 2.5rem 2.25rem; margin-bottom: 2rem; box-shadow: 0 10px 28px rgba(30, 58, 47, 0.14); }
+    .hero-tag { display: inline-block; font-size: 0.78rem; letter-spacing: 0.08em; background: rgba(255, 255, 255, 0.14); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 0.9rem; }
+    .hero h1 { font-family: "Noto Serif TC", Georgia, serif; font-size: clamp(1.7rem, 3.2vw, 2.35rem); margin: 0 0 0.6rem; line-height: 1.3; }
+    .hero p { margin: 0 0 1.4rem; color: #DCE5DF; max-width: 68ch; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; font-size: 0.85rem; color: #CBD7CF; border-top: 1px solid rgba(255, 255, 255, 0.16); padding-top: 1rem; }
+    section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem 2rem; margin-bottom: 1.65rem; }
+    .section-num { font-family: "JetBrains Mono", monospace; font-size: 0.8rem; color: var(--pine-mid); font-weight: 600; letter-spacing: 0.06em; display: block; margin-bottom: 0.2rem; }
+    h2 { font-family: "Noto Serif TC", Georgia, serif; color: var(--pine-dark); font-size: 1.38rem; margin: 0 0 1rem; padding-bottom: 0.55rem; border-bottom: 1.5px solid var(--pine-light); }
+    h3 { font-family: "Noto Serif TC", Georgia, serif; color: var(--pine-dark); font-size: 1.08rem; margin: 1.25rem 0 0.5rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.15rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .card { background: var(--bg-paper); border: 1px solid var(--border); border-radius: 10px; padding: 1.15rem 1.25rem; }
+    .card-pine { background: var(--pine-light); border-color: #C3D4CA; }
+    .card-warn { background: var(--rust-bg); border-color: #FCD34D; }
+    .card-danger { background: var(--danger-bg); border-color: #FCA5A5; }
+    .kpi-value { font-family: "JetBrains Mono", monospace; font-size: 1.55rem; font-weight: 600; color: var(--pine-dark); margin: 0.25rem 0; }
+    .kpi-warn { color: var(--danger); }
+    .formula-box { background: var(--bg-paper); border-left: 4px solid var(--pine-dark); padding: 0.9rem 1.2rem; margin: 1rem 0; border-radius: 0 8px 8px 0; overflow-x: auto; }
+    .callout { border-left: 4px solid var(--rust-warn); background: var(--rust-bg); padding: 0.9rem 1.15rem; border-radius: 0 8px 8px 0; margin: 1rem 0; font-size: 0.95rem; }
+    .callout-boundary { border-left: 4px solid var(--pine-mid); background: var(--pine-light); padding: 0.85rem 1.15rem; border-radius: 0 8px 8px 0; margin-bottom: 1.5rem; font-size: 0.92rem; }
+    .table-wrap { overflow-x: auto; margin-top: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { padding: 0.75rem 0.85rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--pine-light); color: var(--pine-dark); font-weight: 700; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 5px; font-size: 0.78rem; font-weight: 600; font-family: "JetBrains Mono", monospace; }
+    .badge-return { background: #E0F2FE; color: #075985; }
+    .badge-cutoff { background: var(--rust-bg); color: #92400E; }
+    .badge-forward { background: var(--danger-bg); color: var(--danger); }
+    .badge-extra { background: #FEF3C7; color: #92400E; margin-left: 0.4rem; }
+    ul { padding-left: 1.25rem; margin: 0.4rem 0; }
+    li { margin-bottom: 0.35rem; }
+    a { color: var(--pine-mid); }
+    footer { text-align: center; color: var(--ink-muted); font-size: 0.84rem; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><a href="../index.html" style="color: inherit; text-decoration: none;">← 返回總覽</a> ｜ 關山嶺撤退分析</div>
+      <nav class="nav-links">
+        <a href="#overview">情境總覽</a>
+        <a href="#pre-trip">倒隊門檻</a>
+        <a href="#quant">瓶頸量化</a>
+        <a href="#matrix">撤退矩陣</a>
+        <a href="#resources">資源與醫療</a>
+        <a href="#refs">待確認文獻</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <span class="hero-tag">Topographic Field Journal · D-Grade Route Analysis</span>
+      <h1>關山嶺山的撤退路線與決策分析</h1>
+      <p>從南橫大關山隧道東口單攻原路折返，到「關山嶺上溪頭魔保出向陽」D 級探勘縱走的分段停損與不可逆推進機制。</p>
+      <div class="hero-meta">
+        <span>資料基準：<span class="mono">wiki/</span> 已驗證條目</span>
+        <span>最後驗證：<span class="mono">2026-11-16</span></span>
+        <span>山系：中央山脈南段（南橫・向陽稜線）</span>
+      </div>
+    </div>
+
+    <div class="callout-boundary">
+      <strong>知識庫邊界聲明：</strong>本報告正文數據與結論<strong>100% 源自目前 <span class="mono">wiki/</span> 內部條目</strong>；外部網路搜尋結果僅列於文末「建議參考文獻」供確認後再行匯入。
+    </div>
+
+    <section id="intro-summary">
+      <span class="section-num">00 / MOUNTAIN HIGHLIGHTS &amp; STANDARD ROUTE</span>
+      <h2>導讀小總結｜山岳特色與一般路線</h2>
+      <div class="grid-2">
+        <div class="card card-pine">
+          <h3>最為人稱道的特色</h3>
+          <p><strong>關山嶺山</strong>（<span class="mono">H3176m</span>，百岳 #58）為「南橫三星」之一，以極短距離即可換取<strong>開闊稜線展望與雲海</strong>著稱；沿途結合碎石陡坡、風口強陣風與多段攀繩，兼具景觀與技術感。</p>
+        </div>
+        <div class="card">
+          <h3>一般路線 vs. 本次分析</h3>
+          <p>一般山友多由大關山隧道東口（<span class="mono">37K</span>）單程 <span class="mono">1.5 km</span> 單日往返；本報告則進一步針對「關山嶺上溪頭魔保出向陽」這條切入探勘稜線、接嘉明湖步道的 D 級縱走進行撤退決策分析。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="overview">
+      <span class="section-num">01 / SCENARIO OVERVIEW</span>
+      <h2>雙情境撤退結構總覽</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>情境 A：單攻關山嶺山（傳統步道）</h3>
+          <ul>
+            <li><strong>起終點</strong>：台 20 線臨 105 線 37K 大關山隧道東口（<span class="mono">H2722m</span>）↔ 山頂（<span class="mono">H3176m</span>）。</li>
+            <li><strong>基礎數據</strong>：單程 <span class="mono">1.5 km</span>、爬升 <span class="mono">+431–454 m</span>、實測約 <span class="mono">1h23m–1h51m</span>。</li>
+            <li><strong>撤退邏輯</strong>：傳統路徑成熟，遇天候轉壞、身體不適或高山反應，一律<strong>原路折返登山口</strong>。</li>
+          </ul>
+        </div>
+        <div class="card card-pine">
+          <h3>情境 B：關山嶺上溪頭魔保出向陽（D 級 2 日）</h3>
+          <ul>
+            <li><strong>全程數據</strong>：重裝 <span class="mono">13.3 km</span>、累計爬升 <span class="mono">+1028 m</span>、下降 <span class="mono">-1419 m</span>。</li>
+            <li><strong>核心分界</strong>：以「<strong>小營地＋池子</strong>（<span class="mono">23.27992, 120.96989</span>）」為不可逆轉折點。</li>
+            <li><strong>撤退邏輯</strong>：分界點前可退回溪頭山山屋遺址原路折返；過分界點後原則上<strong>單向推進由向陽出</strong>。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="pre-trip">
+      <span class="section-num">02 / GO OR NO-GO</span>
+      <h2>出發前倒隊條件與天候門檻</h2>
+      <div class="grid-3">
+        <div class="card card-warn">
+          <div class="mono">CONDITION 01</div>
+          <h3>寒流發布</h3>
+          <p>出發前一日若發布寒流預報，考量稜線強陣風與夜間低溫失溫風險，應直接倒隊。</p>
+        </div>
+        <div class="card card-danger">
+          <div class="mono">CONDITION 02</div>
+          <h3>雨雪門檻</h3>
+          <p>出發前預報已有過半天數下雪或降雨達 <span class="mono">5 mm/hr</span> 以上，直接倒隊。</p>
+        </div>
+        <div class="card">
+          <div class="mono">CONDITION 03</div>
+          <h3>地形敏感度</h3>
+          <p>全程多碎石陡坡與向陽大崩壁邊緣，降雨易誘發碎石滑動與路徑破壞。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quant">
+      <span class="section-num">03 / QUANTITATIVE ANALYSIS</span>
+      <h2>日照安全餘裕與瓶頸路段量化</h2>
+      <p>冬季日落時間極早（D1 <span class="mono">17:12</span>、D2 <span class="mono">17:11</span>），非大眾探勘路段應避免摸黑行進，日照安全餘裕定義為：</p>
+      <div class="formula-box">
+        $$T_{\text{margin}} = T_{\text{sunset}} - \left(T_{\text{start}} + \sum_{i} \Delta t_i\right)$$
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="mono">BOTTLENECK LEG</div>
+          <div class="kpi-value kpi-warn">+98.3% 延誤率</div>
+          <p><strong>溪頭山 → 小營地看天池鞍部</strong>（極密箭竹海）：企劃預定 <span class="mono">60 min</span>，但 5 份歷史紀錄實測均值達 <span class="mono">119 min</span>。</p>
+          <div class="formula-box">
+            $$\delta = \frac{119 - 60}{60} \approx +98.3\%$$
+          </div>
+        </div>
+        <div class="card">
+          <div class="mono">SECONDARY RISK</div>
+          <div class="kpi-value">+80.0% 延誤率</div>
+          <p><strong>北側營地 → 3316 峰</strong>（瘦稜岩壁橫渡）：企劃預定 <span class="mono">30 min</span>，實測均值 <span class="mono">54 min</span>（最長 <span class="mono">80 min</span>），清晨務必準時拔營。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="matrix">
+      <span class="section-num">04 / RETREAT DECISION MATRIX</span>
+      <h2>四階段撤退節點與時間停損</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>階段／節點</th>
+              <th>位置／海拔</th>
+              <th>觸發條件</th>
+              <th>撤退／應變方案</th>
+              <th>營地／水源／訊號</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. 關山嶺步道段</strong><br><span class="badge badge-return">原路折返</span></td>
+              <td class="mono">H2722m–3176m</td>
+              <td>體能不濟、天候惡化或出現 AMS 徵兆</td>
+              <td>原路下切大關山隧道東口</td>
+              <td>無營地與水源；稜線展望點 4G／H+ 四格</td>
+            </tr>
+            <tr>
+              <td><strong>2. 溪頭山</strong><br><span class="badge badge-cutoff">D1 14:00 停損</span></td>
+              <td class="mono">H3272m</td>
+              <td>D1 14:00 前未抵達，或前段延誤逾 1 hr</td>
+              <td>退回<strong>溪頭山山屋遺址</strong>（H3150m）紮營，隔日原路返回（約 2 hr）</td>
+              <td>遺址可紮 2–3 頂帳、無活水；溪頭山頂 4G 三格</td>
+            </tr>
+            <tr>
+              <td><strong>3. 小營地＋池子</strong><br><span class="badge badge-forward">不可逆分界</span></td>
+              <td class="mono">H3180m<br>23.27992, 120.96989</td>
+              <td>已下切破碎垂直地形，逆向重裝爬回溪頭山極度危險</td>
+              <td><strong>過此點後原則皆從向陽出</strong>（除非大崩壁無法行走）</td>
+              <td>不穩定看天池水呈茶褐色，需過濾煮沸</td>
+            </tr>
+            <tr>
+              <td><strong>4. 魔保來叉路口</strong><br><span class="badge badge-cutoff">D1 16:30 停損</span></td>
+              <td class="mono">H3280m</td>
+              <td>D1 16:30 前未抵達叉路口</td>
+              <td>放棄輕裝取魔保來主峰，直接進北側營地避摸黑</td>
+              <td>營地可搭 3–4 頂四人帳、無活水、無訊號</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <strong>大崩壁特殊處置：</strong>若大崩壁路段出現地面持續崩落、碎石滑動或因降雨導致路徑破壞無法行走，應立即停止推進並原路撤退（啟動 D3 預備日下山）。
+      </div>
+    </section>
+
+    <section id="resources">
+      <span class="section-num">05 / CONTINGENCY & MEDICAL</span>
+      <h2>迫降資源限制與醫療下撤原則</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h3>飲水負重計算</h3>
+          <p>向陽山屋（<span class="mono">H2850m</span>）前皆無穩定活水。以 6 人均分 D1 公水 6L 加兩日私水 3L 計：</p>
+          <div class="formula-box">
+            $$W_{\text{water}} = \frac{6\text{ L}}{6} + 3\text{ L} = 4\text{ L}$$
+          </div>
+          <p>啟動預備日撤退時，需控管餘水並以過濾煮沸看天池水為備援。</p>
+        </div>
+        <div class="card">
+          <h3>通訊與無線電</h3>
+          <ul>
+            <li><strong>急用訊號點</strong>：營地無訊號，旁 <span class="mono">23.28398, 120.973167</span> 中華電信有訊號。</li>
+            <li><strong>隊內頻道</strong>：<span class="mono">145.23 MHz</span>（建議前、中、壓隊各 1 支）。</li>
+            <li><strong>救難頻道</strong>：<span class="mono">148.74 / 148.77 MHz</span>；山難救助協會 <span class="mono">145.20 MHz</span>；專線 <span class="mono">112 / 119 / 1996</span>。</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>醫療下撤準則</h3>
+          <ul>
+            <li><strong>高山反應</strong>：出現 HACE／HAPE 徵兆時，<strong>下降高度是最有效處置</strong>。</li>
+            <li><strong>腳踝扭傷</strong>：依 RICE 原則用冷水袋冰敷，並以八字型包紮固定防二度扭傷。</li>
+            <li><strong>中重度失溫</strong>：保持平躺並加熱核心，盡速下撤送醫。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="refs">
+      <span class="section-num">06 / EXTERNAL REFERENCES (PENDING WIKI REVIEW)</span>
+      <h2>建議參考文獻（待確認後整理進 Wiki）</h2>
+      <p>以下為外部搜尋結果，尚未寫入 <span class="mono">wiki/</span>；標註「額外新增項目」者請確認是否補充至知識庫：</p>
+      <ul>
+        <li>
+          <a href="https://www.ysnp.gov.tw/Trail/382f4797-1eb1-4746-a122-4e13a9e0c7e4?Tab=4" target="_blank" rel="noopener">玉山國家公園｜南橫三山及關山步道系統—交通方式</a>
+          <span class="badge badge-extra">額外新增項目</span>
+          — 梅山口–向陽路段每週<strong>二、三、四禁止通行</strong>；五至一 07:00–14:00 開放進入，<strong>17:00 前須離開管制路段</strong>，直接影響撤退與預備日接駁時程。
+        </li>
+        <li>
+          <a href="https://hike.taiwan.gov.tw/news_7_1.aspx?ID=1029" target="_blank" rel="noopener">臺灣登山申請一站式服務網｜南橫三山申辦規定</a>
+          — 說明南橫三山屬山地管制區與玉山國家公園範圍之申辦規範。
+        </li>
+        <li>
+          <a href="https://hiking.biji.co/index.php?q=review&act=info&review_id=46684" target="_blank" rel="noopener">健行筆記｜南橫埡口段溪頭山縱走關山嶺山</a>
+          <span class="badge badge-extra">額外新增項目</span>
+          — 記錄由溪頭山登山口（38.6K）縱走接關山嶺山出大關山隧道埡口之替代走法。
+        </li>
+        <li>
+          <a href="https://zh-tw.hikingbook.net/hikes/%E9%97%9C%E5%B1%B1%E5%B6%BA%E5%B1%B1-%E6%BA%AA%E9%A0%AD%E5%B1%B1-%E9%AD%94%E4%BF%9D%E4%BE%86%E5%B1%B1-%E5%90%91%E9%99%BD%E7%B8%B1%E8%B5%B0-b6dd18da" target="_blank" rel="noopener">Hikingbook｜關山嶺山-溪頭山-魔保來山-向陽縱走</a>
+          — 初中階探勘實走心得，補充箭竹坡陡上與碎石坡橫渡現況。
+        </li>
+        <li>
+          <a href="https://zh.wikipedia.org/zh-tw/%E9%97%9C%E5%B1%B1%E5%B6%BA%E5%B1%B1" target="_blank" rel="noopener">關山嶺山 — 維基百科</a>
+          <span class="badge badge-extra">額外數據差異</span>
+          — 維基標註海拔 <span class="mono">3,173.7 m</span>，與企劃書常用之 <span class="mono">3,176 m</span> 略有差異。
+        </li>
+      </ul>
+    </section>
+
+    <footer>
+      生成自 <span class="mono">notes/2026-11-16-guanshanling-retreat-routes.md</span> ｜ 台灣百岳路線知識庫
+    </footer>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    });
+  </script>
+</body>
+</html>

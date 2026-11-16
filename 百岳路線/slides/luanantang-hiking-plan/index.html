@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>巒安堂登山計劃分析｜山林地形圖誌</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <style>
+    :root {
+      --bg-paper: #F6F4EF;
+      --bg-card: #FDFCF9;
+      --pine-dark: #1E3A2F;
+      --pine-mid: #2F5746;
+      --pine-light: #E2EAE5;
+      --rust-warn: #B45309;
+      --rust-bg: #FEF3C7;
+      --danger: #991B1B;
+      --danger-bg: #FEE2E2;
+      --ink: #1F2933;
+      --ink-muted: #52606D;
+      --border: #D8D2C5;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background-color: var(--bg-paper);
+      color: var(--ink);
+      font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.75;
+      background-image: repeating-radial-gradient(circle at 85% 15%, transparent 0, transparent 38px, rgba(30, 58, 47, 0.04) 39px, transparent 40px);
+    }
+    .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(246, 244, 239, 0.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+    .topbar-inner { max-width: 980px; margin: 0 auto; padding: 0.7rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .brand { font-family: "Noto Serif TC", Georgia, serif; font-weight: 700; color: var(--pine-dark); font-size: 0.98rem; }
+    .nav-links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem; }
+    .nav-links a { color: var(--ink-muted); text-decoration: none; }
+    .nav-links a:hover { color: var(--pine-dark); text-decoration: underline; }
+    .container { max-width: 980px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .hero { background: var(--pine-dark); color: #F6F4EF; border-radius: 14px; padding: 2.5rem 2.25rem; margin-bottom: 2rem; box-shadow: 0 10px 28px rgba(30, 58, 47, 0.14); }
+    .hero-tag { display: inline-block; font-size: 0.78rem; letter-spacing: 0.08em; background: rgba(255, 255, 255, 0.14); padding: 0.25rem 0.65rem; border-radius: 999px; margin-bottom: 0.9rem; }
+    .hero h1 { font-family: "Noto Serif TC", Georgia, serif; font-size: clamp(1.7rem, 3.2vw, 2.35rem); margin: 0 0 0.6rem; line-height: 1.3; }
+    .hero p { margin: 0 0 1.4rem; color: #DCE5DF; max-width: 68ch; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; font-size: 0.85rem; color: #CBD7CF; border-top: 1px solid rgba(255, 255, 255, 0.16); padding-top: 1rem; }
+    section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem 2rem; margin-bottom: 1.65rem; }
+    .section-num { font-family: "JetBrains Mono", monospace; font-size: 0.8rem; color: var(--pine-mid); font-weight: 600; letter-spacing: 0.06em; display: block; margin-bottom: 0.2rem; }
+    h2 { font-family: "Noto Serif TC", Georgia, serif; color: var(--pine-dark); font-size: 1.38rem; margin: 0 0 1rem; padding-bottom: 0.55rem; border-bottom: 1.5px solid var(--pine-light); }
+    h3 { font-family: "Noto Serif TC", Georgia, serif; color: var(--pine-dark); font-size: 1.08rem; margin: 1.25rem 0 0.5rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.15rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .card { background: var(--bg-paper); border: 1px solid var(--border); border-radius: 10px; padding: 1.15rem 1.25rem; }
+    .card-pine { background: var(--pine-light); border-color: #C3D4CA; }
+    .card-warn { background: var(--rust-bg); border-color: #FCD34D; }
+    .card-danger { background: var(--danger-bg); border-color: #FCA5A5; }
+    .kpi-value { font-family: "JetBrains Mono", monospace; font-size: 1.5rem; font-weight: 600; color: var(--pine-dark); margin: 0.25rem 0; }
+    .kpi-warn { color: var(--danger); }
+    .formula-box { background: var(--bg-paper); border-left: 4px solid var(--pine-dark); padding: 0.9rem 1.2rem; margin: 1rem 0; border-radius: 0 8px 8px 0; overflow-x: auto; }
+    .callout-boundary { border-left: 4px solid var(--pine-mid); background: var(--pine-light); padding: 0.85rem 1.15rem; border-radius: 0 8px 8px 0; margin-bottom: 1.5rem; font-size: 0.92rem; }
+    .table-wrap { overflow-x: auto; margin-top: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { padding: 0.75rem 0.85rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--pine-light); color: var(--pine-dark); font-weight: 700; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 5px; font-size: 0.78rem; font-weight: 600; font-family: "JetBrains Mono", monospace; }
+    .badge-extra { background: #FEF3C7; color: #92400E; margin-left: 0.4rem; }
+    ul { padding-left: 1.25rem; margin: 0.4rem 0; }
+    li { margin-bottom: 0.35rem; }
+    a { color: var(--pine-mid); }
+    footer { text-align: center; color: var(--ink-muted); font-size: 0.84rem; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><a href="../index.html" style="color: inherit; text-decoration: none;">← 返回總覽</a> ｜ 巒安堂登山計劃</div>
+      <nav class="nav-links">
+        <a href="#metrics">核心量化</a>
+        <a href="#legs">分段步程</a>
+        <a href="#team">大隊與通訊</a>
+        <a href="#water">水源策略</a>
+        <a href="#retreat">停損撤退</a>
+        <a href="#refs">待確認文獻</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <span class="hero-tag">Topographic Field Journal · D-Grade 2-Day Plan</span>
+      <h1>巒安堂登山計劃分析（巒安堂上西巒大山）</h1>
+      <p>雙龍林道原路進出 32.7 km 高爬升縱走：14 人大隊編組、乾季水源雙層備援與兩階段時間停損機制。</p>
+      <div class="hero-meta">
+        <span>資料基準：<span class="mono">wiki/</span> 已驗證條目</span>
+        <span>最後驗證：<span class="mono">2026-11-16</span></span>
+        <span>山系：玉山山脈北段（雙龍林道）</span>
+      </div>
+    </div>
+
+    <div class="callout-boundary">
+      <strong>知識庫邊界聲明：</strong>本報告正文數據與結論<strong>100% 源自目前 <span class="mono">wiki/</span> 內部條目</strong>；外部網路搜尋結果僅列於文末「建議參考文獻」供確認後再行匯入。
+    </div>
+
+    <section id="intro-summary">
+      <span class="section-num">00 / MOUNTAIN HIGHLIGHTS &amp; STANDARD ROUTE</span>
+      <h2>導讀小總結｜山岳特色與一般路線</h2>
+      <div class="grid-2">
+        <div class="card card-pine">
+          <h3>最為人稱道的特色</h3>
+          <p><strong>西巒大山</strong>（<span class="mono">H3082m</span>，百岳 #47）為玉山山脈最北端百岳，而「巒安堂路線」最迷人之處在於<strong>消逝的林業人文遺跡</strong>——沿雙龍林道經廢棄工寮、舊摩托車、牡丹園與台電濁水基石，並可遠眺日月潭與治茆山。</p>
+        </div>
+        <div class="card">
+          <h3>一般路線 vs. 本次分析</h3>
+          <p>一般山友最常由「人倫林道」單攻西巒大山（單日大幅陡上陡下約 <span class="mono">1,500 m</span>）；本報告分析的則是結合歷史巡禮與高山宿營的「雙龍林道上巒安堂西巒」D 級 2 日行程。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="metrics">
+      <span class="section-num">01 / QUANTITATIVE OVERVIEW</span>
+      <h2>核心行程指標與日照餘裕</h2>
+      <div class="grid-3">
+        <div class="card card-pine">
+          <div class="mono">TOTAL DISTANCE</div>
+          <div class="kpi-value">32.7 km</div>
+          <p>D1 <span class="mono">13.831 km</span> ＋ D2 <span class="mono">18.894 km</span>（含西巒輕裝往返 <span class="mono">5.07 km</span>）。</p>
+        </div>
+        <div class="card">
+          <div class="mono">ELEVATION GAIN / LOSS</div>
+          <div class="kpi-value">+2,481 / -2,480 m</div>
+          <p>D2 單日重裝＋輕裝需下切 <span class="mono">-1,953 m</span>，總行進時間約 <span class="mono">20 hr</span>。</p>
+        </div>
+        <div class="card card-warn">
+          <div class="mono">D2 SUNSET MARGIN</div>
+          <div class="kpi-value kpi-warn">1 hr 12 min</div>
+          <p>D2 日落 <span class="mono">17:12</span>，預計 <span class="mono">16:00</span> 返抵登山口，須嚴控早段時程。</p>
+        </div>
+      </div>
+      <div class="formula-box">
+        $$D_{\text{total}} = D_1 + D_2 = 13.831 + 18.894 = 32.725\text{ km}, \qquad T_{\text{margin, D2}} = 17:12 - 16:00 = 1\text{ hr } 12\text{ min}$$
+      </div>
+    </section>
+
+    <section id="legs">
+      <span class="section-num">02 / LEG BREAKDOWN</span>
+      <h2>分段步程與關鍵地形</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>路段</th>
+              <th>距離</th>
+              <th>高差</th>
+              <th>預定時間</th>
+              <th>地形與節點備註</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>D1 雙龍林道登山口 → 大崩壁</td>
+              <td class="mono">1.76 km</td>
+              <td class="mono">+221 m</td>
+              <td class="mono">1h 30m</td>
+              <td>樹根石頭陡上；大崩壁中華電信有訊號</td>
+            </tr>
+            <tr>
+              <td>D1 大崩壁 → 腰繞路鋁梯</td>
+              <td class="mono">1.97 km</td>
+              <td class="mono">+210 / -94 m</td>
+              <td class="mono">1h 00m</td>
+              <td>經日月潭展望點、兩座木梯</td>
+            </tr>
+            <tr>
+              <td>D1 鋁梯 → <strong>停機坪</strong>（H2280m）</td>
+              <td class="mono">3.81 km</td>
+              <td class="mono">+225 m</td>
+              <td class="mono">2h 15m</td>
+              <td>經水源 1–5、石瀑與拉繩岩壁（午餐 40m）</td>
+            </tr>
+            <tr>
+              <td>D1 停機坪 → 廢棄工寮 → <strong>巒安堂</strong></td>
+              <td class="mono">6.29 km</td>
+              <td class="mono">+752 / -433 m</td>
+              <td class="mono">3h 05m</td>
+              <td>經舊摩托車、涵管水源、台電濁水基石</td>
+            </tr>
+            <tr>
+              <td>D2 巒安堂 ↔ <strong>西巒大山</strong>（H3082m）</td>
+              <td class="mono">5.07 km</td>
+              <td class="mono">+548 / -548 m</td>
+              <td class="mono">3h 30m</td>
+              <td>輕裝往返（去 2h、三角點休 30m、回 1.5h）</td>
+            </tr>
+            <tr>
+              <td>D2 巒安堂 → 雙龍林道登山口</td>
+              <td class="mono">13.83 km</td>
+              <td class="mono">+525 / -1405 m</td>
+              <td class="mono">6h 30m</td>
+              <td>原路長陡下（含停機坪午餐 30m）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="team">
+      <span class="section-num">03 / TEAM & COMMUNICATIONS</span>
+      <h2>14 人大隊編組與通訊配置</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>雙組行進與宿營分配</h3>
+          <ul>
+            <li><strong>隊伍組成</strong>：14 人（8 舊 6 新；男 6 女 8），分第一、第二兩組行進。</li>
+            <li><strong>帳篷分配</strong>：4 頂三峰四人帳，平均每帳承載：
+              <div class="formula-box">$$N_{\text{per-tent}} = \frac{14}{4} = 3.5\text{ 人／帳}$$</div>
+            </li>
+            <li><strong>留守拆隊機制</strong>：大隊若有人不適，須明確指定留守照護人員。</li>
+          </ul>
+        </div>
+        <div class="card card-pine">
+          <h3>訊號實況與衛星通訊</h3>
+          <ul>
+            <li><strong>遠傳電信</strong>：全線完全 0 訊號。</li>
+            <li><strong>台灣大哥大</strong>：僅在巒安堂與西巒大山有訊號。</li>
+            <li><strong>中華電信</strong>：大崩壁有訊號；停機坪、工寮、西巒大山訊號弱；巒安堂無訊號。</li>
+            <li><strong>衛星與無線電</strong>：採 <span class="mono">Garmin inReach</span> 每小時回報留守一次；配置 4 支無線電（<span class="mono">145.23 MHz</span>）。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="water">
+      <span class="section-num">04 / WATER STRATEGY</span>
+      <h2>乾季水源風險與雙層取水策略</h2>
+      <p>依 2023 年 3 月乾季實測紀錄，水源 3、4 與涵管水源皆曾無水，因此規劃「停機坪取水小隊預取」與「巒安堂溪溝備援」兩套方案：</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>D1 沿線水源座標（WGS84）</h3>
+          <ul class="mono" style="font-size: 0.85rem;">
+            <li>水源 1（鋁梯後 80m）：23.729009, 120.952662</li>
+            <li>水源 2（後 750m）：23.725523, 120.954899</li>
+            <li>水源 3（後 600m）：23.722638, 120.957422（曾乾）</li>
+            <li>水源 4（後 300m）：23.722879, 120.959139（曾乾）</li>
+            <li>水源 5（後 80m）：23.722814, 120.959965（實測有水）</li>
+            <li>涵管水源：23.702112, 120.962736（曾無水）</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>取水小隊與備援</h3>
+          <ul>
+            <li><strong>取水編組</strong>：分第一、第二取水小隊，攜帶 <span class="mono">4×5L</span> 與 <span class="mono">6×3L</span> 公水袋（總公水容積 <span class="mono">38 L</span>）。</li>
+            <li><strong>巒安堂備援</strong>：若營地無水，往人倫林道方向步行單程約 <strong>12 分鐘</strong>至溪溝石壁縫（有水管可接水）。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="retreat">
+      <span class="section-num">05 / GO-NO-GO & CUTOFFS</span>
+      <h2>倒隊門檻與兩大時間停損點</h2>
+      <div class="grid-3">
+        <div class="card card-danger">
+          <div class="mono">PRE-TRIP THRESHOLD</div>
+          <h3>出發前倒隊條件</h3>
+          <p>發布寒流、過半天數預報下雪／雨，或出發前 24 小時累積雨量達 <span class="mono">200 mm</span>（豪雨），一律倒隊。</p>
+        </div>
+        <div class="card card-warn">
+          <div class="mono">CUTOFF 01 · D1 14:00</div>
+          <h3>停機坪停損點</h3>
+          <p>D1 <span class="mono">14:00</span> 未抵停機坪（H2280m），直接於停機坪紮營（風大須留意保暖），不強推至巒安堂。</p>
+        </div>
+        <div class="card card-warn">
+          <div class="mono">CUTOFF 02 · D2 07:40</div>
+          <h3>西巒大山停損點</h3>
+          <p>D2 <span class="mono">07:40</span> 未抵西巒大山三角點，直接回營地撤退下山，確保不摸黑出雙龍林道。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="refs">
+      <span class="section-num">06 / EXTERNAL REFERENCES (PENDING WIKI REVIEW)</span>
+      <h2>建議參考文獻（待確認後整理進 Wiki）</h2>
+      <p>以下為外部搜尋結果，尚未寫入 <span class="mono">wiki/</span>；標註「額外新增項目」者請確認是否補充至知識庫：</p>
+      <ul>
+        <li>
+          <a href="https://www.samejantravel.tw/trails/xiluan-temple" target="_blank" rel="noopener">跟著鯊小去旅行｜西巒大山路線百科</a>
+          <span class="badge badge-extra">額外新增項目</span>
+          — 警政署入山申請雙龍進出須選「<strong>郡大山、西巒大山（南投縣信義鄉）</strong>」；車輛停雙龍七彩吊橋停車廣場，部落至登山口接駁約 40–50 分鐘；亦可採雙龍進、人倫出（A 進 B 出）。
+        </li>
+        <li>
+          <a href="https://nantou.forest.gov.tw/ForestRoad/10003320" target="_blank" rel="noopener">林業及自然保育署南投分署｜雙龍林道</a>
+          <span class="badge badge-extra">額外新增項目</span>
+          — 提供林道路況通報窗口（丹大工作站）。
+        </li>
+        <li>
+          <a href="https://hiking.biji.co/index.php?q=review&act=info&review_id=33508" target="_blank" rel="noopener">健行筆記｜雙龍林道巒安堂懷古之旅</a>
+          — 補充舊人倫工作站歷史沿革與免入園證、須入山證規範。
+        </li>
+        <li>
+          <a href="https://hiking.biji.co/index.php?q=review&act=info&review_id=28588" target="_blank" rel="noopener">健行筆記｜西巒大山雙龍進出攻略</a>
+          — 整理地形、水源與野營點實務經驗。
+        </li>
+      </ul>
+    </section>
+
+    <footer>
+      生成自 <span class="mono">notes/2026-11-16-luanantang-hiking-plan.md</span> ｜ 台灣百岳路線知識庫
+    </footer>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    });
+  </script>
+</body>
+</html>
